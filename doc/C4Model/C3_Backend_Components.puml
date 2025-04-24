@@ -1,0 +1,104 @@
+@startuml C3 Backend Components Diagram
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+!define DEVICON https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons2
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons
+!define MATERIAL https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/material
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+!include DEVICON/docker.puml
+!include DEVICONS/aws.puml
+!include DEVICONS/database.puml
+!include DEVICONS/java.puml
+!include MATERIAL/dashboard.puml
+!include MATERIAL/email.puml
+!include MATERIAL/search.puml
+!include MATERIAL/security.puml
+!include MATERIAL/subscriptions.puml
+!include MATERIAL/watch_later.puml
+!include FONTAWESOME/autoprefixer.puml
+!include FONTAWESOME/aws.puml
+!include FONTAWESOME/piggy_bank.puml
+!include FONTAWESOME/shipping_fast.puml
+!include FONTAWESOME/users.puml
+
+Boundary($alias="system_boundary", "System Boundary"){
+    Container_Boundary($alias="backend_boundary", "Backend Boundary") {
+        Component($alias="api", $label="Azteczon API", $descr="REST API Gateway", $sprite="autoprefixer")
+        Component($alias="security", "Security", $sprite="security")
+        Component($alias="sns", "AWS SNS", $sprite="subscriptions")
+        Person($alias="domain_admin", "Domain Admin", $sprite="person2")
+        Person($alias="system_admin", "System Admin", $sprite="person2")
+        Boundary($alias="aws_efp", "AWS Event Fork Pipeline"){
+            Boundary($alias="efp_sa", "Search and Analytics"){
+                Component($alias="sa_cw", "AWS CloudWatch", $sprite="watch_later")
+                Component($alias="sa_es", "AWS ElasticSearch", $sprite="search")
+                Component($alias="sa_kibana", "AWS Kibana", $sprite="dashboard")
+                Rel_D("sa_cw", "sa_es", "")
+                Rel_D("sa_es", "sa_kibana", "")
+            }
+            Boundary($alias="efp_processing", "Processing"){
+                Component($alias="sqs_processing", "AWS SQS", $sprite="aws")
+                Component($alias="other_lambda", "Lambda Functions", $sprite="java")
+            }
+            Boundary($alias="efp_sb", "Storage and Backup"){
+                Component($alias="sb_sqs", "AWS SQS", $sprite="aws")
+                Component($alias="sb_db", "AWS TimeStream", $sprite="database")
+                Rel_D("sb_sqs", "sb_db", "")
+            }
+            Boundary($alias="efp_replay", "Events Replay"){
+                Component($alias="sqs_replay", "AWS SQS", $sprite="aws")
+            }
+            Rel_R("sb_db", "sqs_replay", "")
+        }
+        Boundary($alias="lambdas", "Lambda Functions"){
+            Component($alias="order", "Order", $sprite="java", "Lambda Functions")
+            Component($alias="billing", "Billing", $sprite="java", "Lambda Functions")
+            Component($alias="stock", "Stock", $sprite="java", "Lambda Functions")
+            Component($alias="logistics", "Logistics", $sprite="java", "Lambda Functions")
+
+            ComponentDb($alias="orderDb", "Aurora ProgreSQL", $sprite="database")
+            ComponentDb($alias="billingDb", "Aurora ProgreSQL", $sprite="database")
+            ComponentDb($alias="stockDb", "Aurora ProgreSQL", $sprite="database")
+            ComponentDb($alias="logisticsDb", "Aurora ProgreSQL", $sprite="database")
+
+            'Lambda to Storage
+            BiRel_D("order", "orderDb", "")
+            BiRel_D("billing", "billingDb", "")
+            BiRel_D("stock", "stockDb", "")
+            BiRel_D("logistics", "logisticsDb", "")
+
+            'Storage to ElasticSearch
+            Rel("billingDb", "sa_es", "Change Data Capture (CDC) / Real-time")
+            Rel("stockDb", "sa_es", "Change Data Capture (CDC) / Real-time")
+            Rel("logisticsDb", "sa_es", "Change Data Capture (CDC) / Real-time")
+        }
+        ' Main API relationships
+        BiRel_U("api", "security", "IAM / Lambda Auth")
+        BiRel_L("api", "lambdas", "gRPC")
+
+        Rel("sns", "aws_efp", "")
+        Rel_D("lambdas", "sns", "Publishers / Subscribers")
+
+        'Admin section
+        BiRel_D("sa_kibana", "domain_admin", "")
+        BiRel_D("sa_kibana", "system_admin", "")
+    }
+    Container_Boundary($alias="frontend_boundary", "Frontend Boundary") {
+    }
+    BiRel("frontend_boundary", "api", "HTTPS")
+}
+
+'External references
+Person_Ext("users", "Users", "Registered and unregistered users", $sprite="users")
+System_Ext("banking_ext", "Banking System", "Banks & Other Financial Institutions", $sprite="piggy_bank")
+System_Ext("email_ext", "e-mail System", "Vendor e-mail system", $sprite="email")
+System_Ext("ship_ext", "Shipping Vendors", "Independent People or Companies", $sprite="shipping_fast")
+
+Rel_L("users", "frontend_boundary", "")
+BiRel_D("other_lambda", "banking_ext", "")
+BiRel_D("other_lambda", "email_ext", "")
+BiRel_D("other_lambda", "ship_ext", "")
+
+@enduml

@@ -1,0 +1,26 @@
+@startuml C1 Context Diagram
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+!include FONTAWESOME/autoprefixer.puml
+!include FONTAWESOME/cloud.puml
+!include FONTAWESOME/mail_bulk.puml
+!include FONTAWESOME/piggy_bank.puml
+!include FONTAWESOME/shipping_fast.puml
+!include FONTAWESOME/users.puml
+
+Boundary($alias="sb1", "System Boundary") {
+    System($alias="azteczon", $label="Azteczon", $descr="e-commerce system", $sprite="autoprefixer")
+}
+
+System_Ext("banking", "Banking System", "Banks & Other Financial Institutions", $sprite="piggy_bank")
+System_Ext("email", "e-mail System", "Vendor e-mail system", $sprite="mail_bulk")
+System_Ext("ship", "Shipping Vendors", "Independent People or Companies", $sprite="shipping_fast")
+Person_Ext("users", "Users", "Registered and unregistered users", $sprite="users")
+
+BiRel_R("azteczon", "banking", "Money transfers")
+BiRel_U("azteczon", "email", "Communication with customers")
+BiRel_L("azteczon", "ship", "Shipping operations")
+BiRel_D("azteczon", "users", "sell products")
+
+@enduml
