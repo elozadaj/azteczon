@@ -21,20 +21,20 @@ Boundary($alias="system_boundary", "System Boundary"){
     Container_Boundary($alias="backend_boundary", "Backend Boundary") {
         System($alias="api", $label="Azteczon API", $descr="REST API layer", $sprite="autoprefixer")
         System($alias="aws", $label="Serverless Architecture", $descr="AWS-based serverless architecture", $sprite="aws")
+        BiRel("api", "aws", "HTTPS")
     }
-BiRel_U("backend_boundary", "frontend_boundary", "HTTPS")
+
+    BiRel_R("frontend_boundary", "api", "HTTPS")
 }
 Person_Ext("users", "Users", "Users of the e-commerce system", $sprite="users")
 System_Ext("banking", "Banking System", "Banks & Other Financial Institutions", $sprite="piggy_bank")
 System_Ext("email", "e-mail System", "Vendor e-mail system", $sprite="mail_bulk")
 System_Ext("ship", "Shipping Vendors", "Independent People or Companies", $sprite="shipping_fast")
 
-BiRel_R("users", "webapp", "HTTP(S)/WebSockets/GraphQL/...")
-BiRel("api", "aws", )
-
-BiRel("aws", "banking", )
-BiRel("aws", "email", )
-BiRel("aws", "ship", )
-
+'External relationships
+BiRel_D("users", "frontend_boundary", "HTTP(S)/WebSockets/GraphQL/...")
+BiRel("aws", "banking", "")
+BiRel("aws", "email", "")
+BiRel("aws", "ship", "")
 
 @enduml

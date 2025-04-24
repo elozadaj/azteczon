@@ -26,10 +26,9 @@
 Boundary($alias="system_boundary", "System Boundary"){
     Container_Boundary($alias="backend_boundary", "Backend Boundary") {
         Component($alias="api", $label="Azteczon API", $descr="REST API Gateway", $sprite="autoprefixer")
-        Component($alias="security", "Security", $sprite="security")
+        Component($alias="security_api", "Security", $sprite="security")
         Component($alias="sns", "AWS SNS", $sprite="subscriptions")
-        Person($alias="domain_admin", "Domain Admin", $sprite="person2")
-        Person($alias="system_admin", "System Admin", $sprite="person2")
+        Component($alias="security_kibana", "Security", $sprite="security")
         Boundary($alias="aws_efp", "AWS Event Fork Pipeline"){
             Boundary($alias="efp_sa", "Search and Analytics"){
                 Component($alias="sa_cw", "AWS CloudWatch", $sprite="watch_later")
@@ -39,7 +38,6 @@ Boundary($alias="system_boundary", "System Boundary"){
                 Rel_D("sa_es", "sa_kibana", "")
             }
             Boundary($alias="efp_processing", "Processing"){
-                Component($alias="sqs_processing", "AWS SQS", $sprite="aws")
                 Component($alias="other_lambda", "Lambda Functions", $sprite="java")
             }
             Boundary($alias="efp_sb", "Storage and Backup"){
@@ -74,16 +72,21 @@ Boundary($alias="system_boundary", "System Boundary"){
             Rel("stockDb", "sa_es", "Change Data Capture (CDC) / Real-time")
             Rel("logisticsDb", "sa_es", "Change Data Capture (CDC) / Real-time")
         }
-        ' Main API relationships
-        BiRel_U("api", "security", "IAM / Lambda Auth")
-        BiRel_L("api", "lambdas", "gRPC")
+        Boundary($alias="secure_admins", "Authorized users"){
+            Person($alias="domain_admin", "Domain Admin", $sprite="person2")
+            Person($alias="system_admin", "System Admin", $sprite="person2")
+        }
 
-        Rel("sns", "aws_efp", "")
-        Rel_D("lambdas", "sns", "Publishers / Subscribers")
+        ' Main API relationships
+        BiRel_D("security_api", "api", "IAM / Lambda Auth")
+        BiRel_L("api", "lambdas", "HTTPS")
+
+        Rel("sns", "aws_efp", "HTTPS", "")
+        Rel_D("lambdas", "sns", "Publish / Subscribe")
 
         'Admin section
-        BiRel_D("sa_kibana", "domain_admin", "")
-        BiRel_D("sa_kibana", "system_admin", "")
+        BiRel_D("sa_kibana", "secure_admins", "")
+        BiRel_R("security_kibana", "secure_admins", "IAM")
     }
     Container_Boundary($alias="frontend_boundary", "Frontend Boundary") {
     }

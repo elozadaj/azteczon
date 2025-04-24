@@ -21,6 +21,6 @@ Person_Ext("users", "Users", "Registered and unregistered users", $sprite="users
 BiRel_R("azteczon", "banking", "Money transfers")
 BiRel_U("azteczon", "email", "Communication with customers")
 BiRel_L("azteczon", "ship", "Shipping operations")
-BiRel_D("azteczon", "users", "sell products")
+BiRel_D("azteczon", "users", "Products sales")
 
 @enduml
