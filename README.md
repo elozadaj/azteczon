@@ -4,17 +4,16 @@ Highly available and scalable e-commerce system
 ## C4 Model
 
 ### C1 Context
-![c1](https://github.com/user-attachments/assets/4cd8aaba-7327-45a8-a254-a139c6eb15b9)
+![c1](https://github.com/user-attachments/assets/8013aab5-7483-4988-af25-762513640638)
 
 ### C2 Containers
-![c2](https://github.com/user-attachments/assets/1eaa11b1-a7ee-4d09-9ee5-75af1889d8fd)
+![c2](https://github.com/user-attachments/assets/5b73aa0c-34db-4790-9e0e-e7b51ccf74b4)
 
 ### C3 Components
 
 #### Backend Components
-
-![c3_backend](https://github.com/user-attachments/assets/be4e826b-278a-416a-a683-c3a2c483240b)
+![c3](https://github.com/user-attachments/assets/1f5481cf-7b80-4783-ad3e-5ea5e8a8c70d)
 
 ## ADRs
 
-For Architecture Decision Records (ADRs), see doc/adr.
+See doc/adr
