@@ -9,11 +9,11 @@ Accepted
 
 ## Context
 
-Derived from the system architecture style (microservices) and deployment model (serverless) chosen for this system, the
-cloud provider must:
+Derived from the system architecture style (microservices) and deployment model (serverless) chosen for this system, cloud
+providers must:
 - Have a mature serverless development ecosystem, including support for Java, as this is the programming language chosen
 for this project.
-- Offer a serverless option for the corresponding cloud-components included into the system architecture:
+- Offer a serverless option for the corresponding cloud components included in the system architecture:
   - messaging, storage, networking, computing, etc.
 - Provide complete and detailed code documentation and examples
 - Provide a transparent price plan. 
