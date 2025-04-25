@@ -23,4 +23,4 @@ for this project.
 The cloud provider chosen is Amazon Web Services, as defined in https://aws.amazon.com/serverless/
 
 ## Consequences
-- Another pop star in a televised quick trip to space.
+- Another pop star in a televised quick trip to "space".
